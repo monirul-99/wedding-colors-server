@@ -83,6 +83,15 @@ async function run() {
       res.send(result);
     });
 
+    app.get(`/review/:id`, async (req, res) => {
+      const id = req.params.id;
+      console.log("This is Id", id);
+      const query = { _id: ObjectId(id) };
+      const searchService = reviewCollection.find(query);
+      const result = await searchService.toArray();
+      res.send(result);
+    });
+
     app.post("/service", async (req, res) => {
       const user = req.body;
       const result = await serviceCollection.insertOne(user);
@@ -94,6 +103,24 @@ async function run() {
       const user = req.body;
       const result = await reviewCollection.insertOne(user);
       console.log(result);
+      res.send(result);
+    });
+
+    app.put("/review/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const updatedUser = req.body;
+      const option = { upsert: true };
+      const updateDoc = {
+        $set: {
+          describe: updatedUser.describe,
+        },
+      };
+      const result = await reviewCollection.updateOne(
+        filter,
+        updateDoc,
+        option
+      );
       res.send(result);
     });
 
